@@ -46,3 +46,5 @@ func insert(f, s []string, point int) []string {
 	result = append(result, f[point:]...)
 	return result
 }
+
+//какие то изменения в ветке dev

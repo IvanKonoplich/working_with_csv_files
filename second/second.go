@@ -1,4 +1,4 @@
-package main
+package second
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type Student struct { // Our example struct, you can use "-" to ignore a field
 	DateOfBirth string `csv:"дата рождения"`
 }
 
-func main() {
+func Second() {
 	classesFile, err := os.OpenFile("students.csv", os.O_RDWR, os.ModePerm)
 	if err != nil {
 		panic(err)

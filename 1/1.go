@@ -2,49 +2,30 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"math/rand"
+	"time"
 )
 
-//Напишите функцию, которая начинает, записывает с определенной позиции,
-//в первый массив, все значения второго (без использования стандартной библиотеки)
-
 func main() {
-	fmt.Println("введите колличество элементов первого массива")
-	var num int
-	fmt.Scan(&num)
-	fmt.Println("введите элементы первого массива")
-	var elem string
-	first := make([]string, 0, num)
-	for i := 0; i < num; i++ {
-		fmt.Scan(&elem)
-		first = append(first, elem)
+	rand.Seed(time.Now().UnixNano())
+	digits := "0123456789"
+	specials := "~=+%^*/()[]{}/!@#$?|"
+	all := "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"abcdefghijklmnopqrstuvwxyz" +
+		digits + specials
+	fmt.Println("введите длину пароля")
+	var input int
+	fmt.Scan(&input)
+	length := input
+	buf := make([]byte, length)
+	buf[0] = digits[rand.Intn(len(digits))]
+	buf[1] = specials[rand.Intn(len(specials))]
+	for i := 2; i < length; i++ {
+		buf[i] = all[rand.Intn(len(all))]
 	}
-	fmt.Println("введите колличество элементов второго массива")
-	fmt.Scan(&num)
-	fmt.Println("введите элементы второго массива")
-	second := make([]string, 0, num)
-	for i := 0; i < num; i++ {
-		fmt.Scan(&elem)
-		second = append(second, elem)
-	}
-	fmt.Println("введите позицию(индекс начиная с 0) первого массива, с которой будут вставляться значения ")
-	var point int
-	fmt.Scan(&point)
-	if point >= num {
-		log.Fatal("позиция больше длины массива")
-	}
-	if point > num {
-		log.Fatal("позиция меньше длины массива")
-	}
-	fmt.Println(insert(first, second, point))
+	rand.Shuffle(len(buf), func(i, j int) {
+		buf[i], buf[j] = buf[j], buf[i]
+	})
+	str := string(buf)
+	fmt.Println(str)
 }
-
-func insert(f, s []string, point int) []string {
-	result := make([]string, 0, len(f)+len(s))
-	result = append(result, f[:point]...)
-	result = append(result, s...)
-	result = append(result, f[point:]...)
-	return result
-}
-
-//какие то изменения в ветке dev

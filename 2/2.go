@@ -4,38 +4,61 @@ import (
 	"fmt"
 	"github.com/gocarina/gocsv"
 	"os"
+	"time"
 )
 
-//Составить список учебной группы, включающий Х человек. Для каждого студента указать: фамилию и имя,
-//дату рождения (год, месяц и число), также у каждого студента есть зачетка, в которой указаны:
-//предмет (от трех до пяти), дата экзамена, ФИО преподавателя.
-//чтение из терминала или файла или бд
-//Вывести в виде таблицы все предметы и количество студентов, получивших оценки по этим предметам
-
-type Class struct { // Our example struct, you can use "-" to ignore a field
-	ClassName string `csv:"предмет"`
-	Exam      int    `csv:"оценка"`
+type Student struct { // Our example struct, you can use "-" to ignore a field
+	SureName    string `csv:"фамилия"`
+	Name        string `csv:"имя"`
+	DateOfBirth string `csv:"дата рождения"`
 }
 
 func main() {
-	classesFile, err := os.OpenFile("classes.csv", os.O_RDWR, os.ModePerm)
+	classesFile, err := os.OpenFile("students.csv", os.O_RDWR, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 	defer classesFile.Close()
 
-	classes := []*Class{}
+	classes := make([]Student, 0)
 
 	if err := gocsv.UnmarshalFile(classesFile, &classes); err != nil { // Load clients from file
 		panic(err)
 	}
-	result := make(map[string]int, len(classes))
-	for _, class := range classes {
-		if class.Exam > 0 {
-			result[class.ClassName]++
+
+	minS := findMin(classes)
+	maxS := findMax(classes)
+
+	fmt.Println(minS.Name, minS.SureName, minS.DateOfBirth)
+	fmt.Println(maxS.Name, maxS.SureName, maxS.DateOfBirth)
+}
+
+func findMax(students []Student) Student {
+	result := students[0]
+	for _, j := range students {
+		value, err := time.Parse("02.01.2006", j.DateOfBirth)
+		if err != nil {
+			fmt.Println("все сломалось - ", err.Error())
+		}
+		valueAtResult, err := time.Parse("02.01.2006", result.DateOfBirth)
+		if time.Since(value) > time.Since(valueAtResult) {
+			result = j
 		}
 	}
-	for key, value := range result {
-		fmt.Printf("%s:%d\n", key, value)
+	return result
+}
+
+func findMin(students []Student) Student {
+	result := students[0]
+	for _, j := range students {
+		value, err := time.Parse("02.01.2006", j.DateOfBirth)
+		if err != nil {
+			fmt.Println("все сломалось - ", err.Error())
+		}
+		valueAtResult, err := time.Parse("02.01.2006", result.DateOfBirth)
+		if time.Since(value) < time.Since(valueAtResult) {
+			result = j
+		}
 	}
+	return result
 }
